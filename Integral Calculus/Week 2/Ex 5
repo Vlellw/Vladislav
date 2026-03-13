@@ -1,5 +1,6 @@
-clc
-clear
+clc;
+clear;
+close all;
 
 syms x t
 
