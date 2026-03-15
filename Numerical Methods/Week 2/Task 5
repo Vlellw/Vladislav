@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import quad
+
+
+# 1. Define the functions
+def f1(x):
+    return np.exp(-x ** 2) + x ** 4
+
+
+def f2(x):
+    return np.exp(-np.abs(x - 0.5) ** (1 / 4))
+
+
+# 2. Implement the Trapezoidal Rule
+def trapezoidal_rule(f, n):
+    """
+    Approximates the integral of f from 0 to 1 using n subdivisions.
+    """
+    x = np.linspace(0, 1, n + 1)
+    y = f(x)
+    # Using the composite trapezoidal formula for efficiency
+    return np.sum(y[:-1] + y[1:]) / (2 * n)
+
+
+# 3. Setup parameters
+n_values = np.arange(1, 101)
+functions = [
+    (f1, "f(x) = exp(-x²) + x⁴", 2.0),  # Expected alpha approx 2.0
+    (f2, "f(x) = exp(-|x-0.5|^{1/4})", 1.25)  # Expected alpha is lower due to singularity
+]
+
+plt.figure(figsize=(12, 7))
+
+for f, label, alpha_guess in functions:
+    # Compute the "ground truth"
+    true_val, _ = quad(f, 0, 1)
+
+    # Calculate absolute errors for each n
+    errors = [abs(trapezoidal_rule(f, n) - true_val) for n in n_values]
+
+    # Plot the error function
+    line, = plt.plot(n_values, errors, marker='.', label=f"Error: {label}")
+
+    # Part (b): Plot a reference line err(1) * n^(-alpha) to check the order
+    # This helps visualize which alpha fits the slope of the error curve
+    reference_line = errors[0] * (n_values.astype(float) ** -alpha_guess)
+    plt.plot(n_values, reference_line, '--', color=line.get_color(), alpha=0.5,
+             label=f"Reference slope (n^-{alpha_guess})")
+
+# 4. Configure plot appearance
+plt.yscale("log")  # Required logarithmic scale for y-axis
+plt.xscale("log")  # Using log on x-axis makes polynomial orders appear as straight lines
+plt.xlabel("n")
+plt.ylabel("err(n)")
+plt.title("Numerical Integration Error Analysis")
+plt.grid(True, which="both", ls="-", alpha=0.3)
+plt.legend()
+
+plt.show()
