@@ -15,7 +15,7 @@ def trapezoid_rule(f, a, b, n):
 
 n_values = [20, 40, 60, 80, 100]
 
-# calc of the mistake
+# calc of the error
 for n in n_values:
     s_n = trapezoid_rule(f, 0, 1, n)
     error = abs(I_exact - s_n)
